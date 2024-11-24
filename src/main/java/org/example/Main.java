@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.api.Dto.ParachuteDTO;
+import org.example.api.Dto.ParachuteDTOBuilder;
 import org.example.api.Factory.ParachuteFactory;
 import org.example.api.Misc.Archiver;
 
@@ -13,19 +14,44 @@ public class Main {
         var storage = new ParachuteFactory();
         Scanner scanner = new Scanner(System.in);
 
+        boolean t1 = false;
 
-        storage.readFromFile("parachute.txt");
-        storage.setListStorage(storage.readFromXml("parachute.xml"));
-        storage.setListStorage(storage.readDataFromJsonFile("parachute.json"));
+        do {
+            System.out.println("Из какого файла прочитать данные? (txt, xml, json)");
+            String fileToRead = scanner.nextLine();
+            fileToRead = fileToRead.toLowerCase();
+            switch (fileToRead) {
+                case "txt":
+                    storage.readFromFile("parachute.txt");
+                    t1 = true;
+                    break;
+
+                case "xml":
+                    storage.setListStorage(storage.readFromXml("parachute.xml"));
+                    t1 = true;
+                    break;
+
+                case "json":
+                    storage.setListStorage(storage.readDataFromJsonFile("parachute.json"));
+                    t1 = true;
+                    break;
+
+                default:
+                    System.out.println("Неправильный формат файла. Попробуйте снова.");
+                    break;
+            }
+        } while (!t1);
+
         System.out.println("Список парашютов получен.");
         for (ParachuteDTO dto : storage.getList()) {
             System.out.println(dto.toString());
         }
         System.out.println();
-        int id=-1;
-        String name="";
-        String description="";
-        boolean t=true;
+
+        int id = -1;
+        String name = "";
+        String description = "";
+        boolean t = true;
         do {
             System.out.println("Введите данные о парашюте в формате cost,name,description:");
             try {
@@ -34,6 +60,7 @@ public class Main {
                 id = Integer.parseInt(parts[0]);
                 name = parts[1];
                 description = parts[2];
+
                 int finalId = id;
                 String finalDescription = description;
                 String finalName = name;
@@ -44,15 +71,19 @@ public class Main {
                     System.out.println("Такой парашют уже получен!");
                     return;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Попробуйте снова");
-                t=false;
+                t = false;
             }
-        }while(t!=true);
-        System.out.println(storage.getList());
+        } while (t != true);
 
+        // Use the Builder pattern to create the new ParachuteDTO
+        ParachuteDTO newParachute = new ParachuteDTOBuilder()
+                .setCost(id)
+                .setName(name)
+                .setDescription(description)
+                .build();
 
-        var newParachute = new ParachuteDTO(id, name, description);
         storage.addToListStorage(newParachute);
         storage.addToMapStorage(id, newParachute);
 
@@ -67,7 +98,6 @@ public class Main {
             System.out.println("Выберете поле для сортировки(cost,name,description):");
             String typeSort = scanner.nextLine();
             typeSort = typeSort.toLowerCase();
-
 
             switch (typeSort) {
 
@@ -91,12 +121,12 @@ public class Main {
                     System.out.println("Парашюты сортированные по описанию: " + storage.getList());
                     ans = true;
                     break;
+
                 default:
                     System.out.println("Введено неверное поле");
                     break;
             }
         } while (!ans);
-
 
         String[] files = new String[]{
                 "parachute.txt",
@@ -108,9 +138,8 @@ public class Main {
         try {
             archiver.createZipArchive("zipResult.zip", files);
             archiver.createJarArchive("jarResult.jar", files);
-        }catch (IOException e)  {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
-

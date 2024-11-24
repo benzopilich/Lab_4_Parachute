@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.api.Dto.ParachuteDTO;
-import org.example.api.Dto.ParachuteDTOBuilder;
 import org.example.api.Factory.ParachuteFactory;
 import org.example.api.Misc.Archiver;
 
@@ -11,7 +10,7 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        var storage = new ParachuteFactory();
+        var storage = ParachuteFactory.getInstance();
         Scanner scanner = new Scanner(System.in);
 
         boolean t1 = false;
@@ -41,13 +40,11 @@ public class Main {
                     break;
             }
         } while (!t1);
-
         System.out.println("Список парашютов получен.");
         for (ParachuteDTO dto : storage.getList()) {
             System.out.println(dto.toString());
         }
         System.out.println();
-
         int id = -1;
         String name = "";
         String description = "";
@@ -60,12 +57,11 @@ public class Main {
                 id = Integer.parseInt(parts[0]);
                 name = parts[1];
                 description = parts[2];
-
                 int finalId = id;
                 String finalDescription = description;
                 String finalName = name;
-                if (storage.getList().stream().anyMatch(parachuteDTO -> parachuteDTO.getCost() == finalId) ||
-                        storage.getList().stream().anyMatch(ParachuteDTO -> ParachuteDTO.getDescription().equals(finalDescription)) ||
+                if (storage.getList().stream().anyMatch(parachuteDTO -> parachuteDTO.getCost() == finalId) &&
+                        storage.getList().stream().anyMatch(ParachuteDTO -> ParachuteDTO.getDescription().equals(finalDescription)) &&
                         storage.getList().stream().anyMatch(CategoryDto -> CategoryDto.getName().equals(finalName))
                 ) {
                     System.out.println("Такой парашют уже получен!");
@@ -76,14 +72,9 @@ public class Main {
                 t = false;
             }
         } while (t != true);
+        System.out.println(storage.getList());
 
-        // Use the Builder pattern to create the new ParachuteDTO
-        ParachuteDTO newParachute = new ParachuteDTOBuilder()
-                .setCost(id)
-                .setName(name)
-                .setDescription(description)
-                .build();
-
+        var newParachute = new ParachuteDTO(id, name, description);
         storage.addToListStorage(newParachute);
         storage.addToMapStorage(id, newParachute);
 
@@ -121,7 +112,6 @@ public class Main {
                     System.out.println("Парашюты сортированные по описанию: " + storage.getList());
                     ans = true;
                     break;
-
                 default:
                     System.out.println("Введено неверное поле");
                     break;

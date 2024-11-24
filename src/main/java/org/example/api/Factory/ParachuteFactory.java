@@ -2,6 +2,8 @@ package org.example.api.Factory;
 
 import org.example.api.Dto.ParachuteDTO;
 import org.example.persistence.Repositories.AbstractStorage;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,17 +13,27 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.*;
-
-
 public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
+
+    private static ParachuteFactory instance;
+
+    private ParachuteFactory() {}
+
+    public static ParachuteFactory getInstance() {
+        if (instance == null) {
+            instance = new ParachuteFactory();
+        }
+        return instance;
+    }
 
     @Override
     public void readFromFile(String filename) {
@@ -63,8 +75,7 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
 
     @Override
     public List<ParachuteDTO> readFromXml(String filename) {
-        List<ParachuteDTO> list=new ArrayList<ParachuteDTO>();
-
+        List<ParachuteDTO> list = new ArrayList<>();
         try {
             File xmlFile = new File(filename);
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -73,7 +84,6 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
 
             document.getDocumentElement().normalize();
             NodeList nodeList = document.getElementsByTagName("parachute");
-
 
             for (int i = 0; i < nodeList.getLength(); i++) {
                 Node node = nodeList.item(i);
@@ -89,11 +99,7 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
                     list.add(parachute);
                 }
             }
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }
         return list;
@@ -102,7 +108,6 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
     @Override
     public void writeToXml(String filename, List<ParachuteDTO> list) {
         try {
-
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
@@ -125,10 +130,8 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
                 model.appendChild(document.createTextNode(vehicle.getDescription()));
                 parachute.appendChild(model);
 
-
                 root.appendChild(parachute);
             }
-
 
             Transformer tr = TransformerFactory.newInstance().newTransformer();
             DOMSource source = new DOMSource(document);
@@ -136,19 +139,10 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
             StreamResult result = new StreamResult(new File(filename));
 
             tr.setOutputProperty(OutputKeys.INDENT, "yes");
-
-
             tr.transform(source, result);
-        } catch (TransformerConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (TransformerException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -167,7 +161,7 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
             JSONArray jsonArray = new JSONArray(jsonContent.toString());
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                ParachuteDTO parachute1 = new ParachuteDTO() ;
+                ParachuteDTO parachute1 = new ParachuteDTO();
                 parachute1.setCost(jsonObject.getInt("cost"));
                 parachute1.setName(jsonObject.getString("name"));
                 parachute1.setDescription(jsonObject.getString("description"));

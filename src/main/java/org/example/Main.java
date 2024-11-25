@@ -1,7 +1,6 @@
 package org.example;
 
 import org.example.api.Dto.ParachuteDTO;
-import org.example.api.Dto.ParachuteDTOBuilder;
 import org.example.api.Factory.ParachuteFactory;
 import org.example.api.Misc.Archiver;
 
@@ -78,10 +77,10 @@ public class Main {
         } while (t != true);
 
         // Use the Builder pattern to create the new ParachuteDTO
-        ParachuteDTO newParachute = new ParachuteDTOBuilder()
-                .setCost(id)
-                .setName(name)
-                .setDescription(description)
+        ParachuteDTO newParachute = ParachuteDTO.builder()
+                .Cost(id)
+                .Name(name)
+                .Description(description)
                 .build();
 
         storage.addToListStorage(newParachute);

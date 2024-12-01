@@ -57,34 +57,33 @@ public class ParachuteGUI {
         JScrollPane tableScrollPane = new JScrollPane(table);
 
         // Панель для выбора файлов
-        JPanel filePanel = new JPanel();
+        JPanel Panel = new JPanel();
         JButton readButton = new JButton("Read Data");
         readButton.addActionListener(new ReadButtonListener());
 
         JButton writeButton = new JButton("Write Data");
         writeButton.addActionListener(new WriteButtonListener());
 
-        filePanel.add(readButton);
-        filePanel.add(writeButton);
+        Panel.add(readButton);
+        Panel.add(writeButton);
 
-        // Панель для сортировки
-        JPanel sortPanel = new JPanel();
+        // Сортировка
         JButton sortButton = new JButton("Sort Data");
         sortButton.addActionListener(new SortButtonListener());
 
-        sortPanel.add(sortButton);
+        Panel.add(sortButton);
 
         // Архив
         JButton archiveButton = new JButton("Create Archive");
         archiveButton.addActionListener(new ArchiveButtonListener());
 
+        Panel.add(archiveButton);
+
         // Размещение элементов
         frame.setLayout(new BorderLayout());
         frame.add(inputPanel, BorderLayout.NORTH);
         frame.add(tableScrollPane, BorderLayout.CENTER); // Добавляем таблицу в центр
-        frame.add(filePanel, BorderLayout.SOUTH);  // Панель для кнопок файлов внизу
-        frame.add(sortPanel, BorderLayout.WEST);   // Панель для сортировки слева
-        frame.add(archiveButton, BorderLayout.EAST);  // Кнопка архива справа
+        frame.add(Panel, BorderLayout.SOUTH);  // Панель для кнопок внизу
 
         frame.setVisible(true);
     }

@@ -1,8 +1,4 @@
-3,goodA,glop
-4,gh,eder
-52,ilya,godbless
-1000,holand,fifa
-3558,sprunk,gta5enjoyer
-9966,www,huhCool
 40052,redBull,veryCoolAndAmazing
+3558,sprunk,gta5enjoyer
 600101,dior,beautiful
+52,52,52

@@ -112,7 +112,7 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
 
-            Element root = document.createElement("parachute");
+            Element root = document.createElement("parachutes");
             document.appendChild(root);
 
             for (ParachuteDTO vehicle : list) {

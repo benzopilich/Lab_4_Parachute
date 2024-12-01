@@ -102,10 +102,10 @@ public class ParachuteGUI {
 
                     // Проверка на дублирование
                     boolean isDuplicate = storage.getList().stream()
-                            .anyMatch(p -> p.getCost() == costInt || p.getName().equalsIgnoreCase(name));
+                            .anyMatch(p -> p.getName().equalsIgnoreCase(name));
 
                     if (isDuplicate) {
-                        JOptionPane.showMessageDialog(frame, "Parachute with the same cost or name already exists.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Parachute with the same name already exists.", "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         storage.addToListStorage(parachute);
                         storage.addToMapStorage(costInt, parachute);

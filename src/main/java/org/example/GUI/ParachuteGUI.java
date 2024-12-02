@@ -28,9 +28,8 @@ public class ParachuteGUI {
     public void createAndShowGUI() {
         frame = new JFrame("Parachute Manager");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800, 600); // Увеличим размер окна для таблицы
+        frame.setSize(800, 600);
 
-        // Панель для ввода данных
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(4, 2));
 
@@ -51,12 +50,10 @@ public class ParachuteGUI {
 
         inputPanel.add(addButton);
 
-        // Модель таблицы для отображения парашютов
         tableModel = new DefaultTableModel(new Object[] {"Cost", "Name", "Description"}, 0);
         table = new JTable(tableModel);
         JScrollPane tableScrollPane = new JScrollPane(table);
 
-        // Панель для выбора файлов
         JPanel Panel = new JPanel();
         JButton readButton = new JButton("Read Data");
         readButton.addActionListener(new ReadButtonListener());
@@ -67,23 +64,20 @@ public class ParachuteGUI {
         Panel.add(readButton);
         Panel.add(writeButton);
 
-        // Сортировка
         JButton sortButton = new JButton("Sort Data");
         sortButton.addActionListener(new SortButtonListener());
 
         Panel.add(sortButton);
 
-        // Архив
         JButton archiveButton = new JButton("Create Archive");
         archiveButton.addActionListener(new ArchiveButtonListener());
 
         Panel.add(archiveButton);
 
-        // Размещение элементов
         frame.setLayout(new BorderLayout());
         frame.add(inputPanel, BorderLayout.NORTH);
-        frame.add(tableScrollPane, BorderLayout.CENTER); // Добавляем таблицу в центр
-        frame.add(Panel, BorderLayout.SOUTH);  // Панель для кнопок внизу
+        frame.add(tableScrollPane, BorderLayout.CENTER);
+        frame.add(Panel, BorderLayout.SOUTH);
 
         frame.setVisible(true);
     }
@@ -100,7 +94,6 @@ public class ParachuteGUI {
                     int costInt = Integer.parseInt(cost);
                     ParachuteDTO parachute = new ParachuteDTO(costInt, name, description);
 
-                    // Проверка на дублирование
                     boolean isDuplicate = storage.getList().stream()
                             .anyMatch(p -> p.getName().equalsIgnoreCase(name));
 
@@ -110,7 +103,6 @@ public class ParachuteGUI {
                         storage.addToListStorage(parachute);
                         storage.addToMapStorage(costInt, parachute);
 
-                        // Обновление таблицы
                         tableModel.addRow(new Object[] {parachute.getCost(), parachute.getName(), parachute.getDescription()});
                     }
 
@@ -134,11 +126,9 @@ public class ParachuteGUI {
             if (fileType != null) {
                 new Thread(() -> {
                     try {
-                        // Очищаем данные в таблице и в хранилище перед чтением нового файла
                         tableModel.setRowCount(0);
                         storage.getList().clear();
 
-                        // Читаем данные из выбранного файла
                         switch (fileType) {
                             case "parachute.txt":
                                 storage.readFromFile(fileType);
@@ -153,7 +143,6 @@ public class ParachuteGUI {
                                 throw new IOException("Unsupported file format");
                         }
 
-                        // Обновляем таблицу с новыми данными
                         updateTable();
 
                         JOptionPane.showMessageDialog(frame, "Data successfully loaded from " + fileType,
@@ -167,32 +156,30 @@ public class ParachuteGUI {
         }
     }
 
-
-
     private class WriteButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            String[] options = {"parachute.txt", "parachute.xml", "parachute.json"};
-            String fileType = (String) JOptionPane.showInputDialog(frame,
-                    "Select file to write to", "Select File",
-                    JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+            new Thread(() -> {
+                Thread txtWriter = new Thread(() -> storage.writeToFile("parachute.txt"));
+                Thread xmlWriter = new Thread(() -> storage.writeToXml("parachute.xml", storage.getList()));
+                Thread jsonWriter = new Thread(() -> storage.writeDataToJsonFile("parachute.json", storage.getList()));
 
-            if (fileType != null) {
-                new Thread(() -> {
-                    switch (fileType) {
-                        case "parachute.txt":
-                            storage.writeToFile(fileType);
-                            break;
-                        case "parachute.xml":
-                            storage.writeToXml(fileType, storage.getList());
-                            break;
-                        case "parachute.json":
-                            storage.writeDataToJsonFile(fileType, storage.getList());
-                            break;
-                    }
-                    JOptionPane.showMessageDialog(frame, "Data written to " + fileType, "Success", JOptionPane.INFORMATION_MESSAGE);
-                }).start();
-            }
+                txtWriter.start();
+                xmlWriter.start();
+                jsonWriter.start();
+
+                try {
+                    txtWriter.join();
+                    xmlWriter.join();
+                    jsonWriter.join();
+                } catch (InterruptedException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error during file writing: " + ex.getMessage(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                JOptionPane.showMessageDialog(frame, "Data written to all files", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }).start();
         }
     }
 
@@ -217,7 +204,6 @@ public class ParachuteGUI {
                             storage.getList().sort(Comparator.comparing(ParachuteDTO::getDescription));
                             break;
                     }
-                    // Обновляем таблицу после сортировки
                     updateTable();
                 }).start();
             }
@@ -242,12 +228,8 @@ public class ParachuteGUI {
         }
     }
 
-    // Метод для обновления таблицы
     private void updateTable() {
-        // Очистить текущую таблицу
         tableModel.setRowCount(0);
-
-        // Добавить все парашюты в таблицу
         for (ParachuteDTO parachute : storage.getList()) {
             tableModel.addRow(new Object[] {parachute.getCost(), parachute.getName(), parachute.getDescription()});
         }

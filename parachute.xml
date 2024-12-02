@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <parachutes>
     <parachute>
-        <cost>52</cost>
-        <name>52</name>
-        <description>52</description>
-    </parachute>
-    <parachute>
-        <cost>600101</cost>
-        <name>dior</name>
-        <description>beautiful</description>
+        <cost>40052</cost>
+        <name>redBull</name>
+        <description>veryCoolAndAmazing</description>
     </parachute>
     <parachute>
         <cost>3558</cost>
@@ -16,8 +11,8 @@
         <description>gta5enjoyer</description>
     </parachute>
     <parachute>
-        <cost>40052</cost>
-        <name>redBull</name>
-        <description>veryCoolAndAmazing</description>
+        <cost>600101</cost>
+        <name>dior</name>
+        <description>beautiful</description>
     </parachute>
 </parachutes>

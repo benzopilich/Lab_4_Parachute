@@ -14,6 +14,11 @@ import java.util.List;
 public class FileOperations {
 
     public static void readFromFile(AbstractStorage<ParachuteDTO> storage, String filename) throws IOException {
+        File file = new File(filename);
+        if (!file.exists()) {
+            throw new IOException("File not found: " + filename);
+        }
+
         if (filename.endsWith(".txt")) {
             storage.readFromFile(filename);
         } else if (filename.endsWith(".xml")) {

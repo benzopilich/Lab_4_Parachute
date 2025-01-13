@@ -26,7 +26,7 @@ public class ParachuteFactory extends AbstractStorage<ParachuteDTO> {
 
     private static ParachuteFactory instance;
 
-    private ParachuteFactory() {}
+    public ParachuteFactory() {}
 
     public static ParachuteFactory getInstance() {
         if (instance == null) {

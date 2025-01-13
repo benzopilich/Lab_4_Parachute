@@ -10,22 +10,45 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        var storage = new ParachuteFactory();
+        var storage = ParachuteFactory.getInstance();
         Scanner scanner = new Scanner(System.in);
 
+        boolean t1 = false;
 
-        storage.readFromFile("parachute.txt");
-        storage.setListStorage(storage.readFromXml("parachute.xml"));
-        storage.setListStorage(storage.readDataFromJsonFile("parachute.json"));
+        do {
+            System.out.println("Из какого файла прочитать данные? (txt, xml, json)");
+            String fileToRead = scanner.nextLine();
+            fileToRead = fileToRead.toLowerCase();
+            switch (fileToRead) {
+                case "txt":
+                    storage.readFromFile("parachute.txt");
+                    t1 = true;
+                    break;
+
+                case "xml":
+                    storage.setListStorage(storage.readFromXml("parachute.xml"));
+                    t1 = true;
+                    break;
+
+                case "json":
+                    storage.setListStorage(storage.readDataFromJsonFile("parachute.json"));
+                    t1 = true;
+                    break;
+
+                default:
+                    System.out.println("Неправильный формат файла. Попробуйте снова.");
+                    break;
+            }
+        } while (!t1);
         System.out.println("Список парашютов получен.");
         for (ParachuteDTO dto : storage.getList()) {
             System.out.println(dto.toString());
         }
         System.out.println();
-        int id=-1;
-        String name="";
-        String description="";
-        boolean t=true;
+        int id = -1;
+        String name = "";
+        String description = "";
+        boolean t = true;
         do {
             System.out.println("Введите данные о парашюте в формате cost,name,description:");
             try {
@@ -37,20 +60,19 @@ public class Main {
                 int finalId = id;
                 String finalDescription = description;
                 String finalName = name;
-                if (storage.getList().stream().anyMatch(parachuteDTO -> parachuteDTO.getCost() == finalId) ||
-                        storage.getList().stream().anyMatch(ParachuteDTO -> ParachuteDTO.getDescription().equals(finalDescription)) ||
+                if (storage.getList().stream().anyMatch(parachuteDTO -> parachuteDTO.getCost() == finalId) &&
+                        storage.getList().stream().anyMatch(ParachuteDTO -> ParachuteDTO.getDescription().equals(finalDescription)) &&
                         storage.getList().stream().anyMatch(CategoryDto -> CategoryDto.getName().equals(finalName))
                 ) {
                     System.out.println("Такой парашют уже получен!");
                     return;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("Попробуйте снова");
-                t=false;
+                t = false;
             }
-        }while(t!=true);
+        } while (t != true);
         System.out.println(storage.getList());
-
 
         var newParachute = new ParachuteDTO(id, name, description);
         storage.addToListStorage(newParachute);
@@ -67,7 +89,6 @@ public class Main {
             System.out.println("Выберете поле для сортировки(cost,name,description):");
             String typeSort = scanner.nextLine();
             typeSort = typeSort.toLowerCase();
-
 
             switch (typeSort) {
 
@@ -97,7 +118,6 @@ public class Main {
             }
         } while (!ans);
 
-
         String[] files = new String[]{
                 "parachute.txt",
                 "parachute.json",
@@ -108,9 +128,8 @@ public class Main {
         try {
             archiver.createZipArchive("zipResult.zip", files);
             archiver.createJarArchive("jarResult.jar", files);
-        }catch (IOException e)  {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
-
